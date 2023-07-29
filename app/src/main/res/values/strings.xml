@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">MedicineSound_compose</string>
+    <string name="app_name">약소리</string>
+
+    <string name="btn_camera">사진찍기</string>
+    <string name="btn_cognize">인식하기</string>
+    <string name="btn_extract_info">정보추출</string>
 </resources>
