@@ -1,9 +1,9 @@
 package com.y.medicinesound_compose
 
 import android.app.Application
-import androidx.compose.material3.ExperimentalMaterial3Api
+import dagger.hilt.android.HiltAndroidApp
 
-@ExperimentalMaterial3Api
+@HiltAndroidApp
 class MedicineSoundApplication : Application() {
     override fun onCreate() {
         super.onCreate()
