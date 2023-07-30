@@ -4,11 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
+
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCapture.OutputFileResults
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.core.resolutionselector.ResolutionSelector
@@ -66,7 +66,12 @@ class CustomCameraRepoImpl @Inject constructor(
                     // get the uri for capture image
                     // we can use this uri to display captured
                     // you can use coil library to load this uri
-
+                    Toast.makeText(
+                        context,
+                        "${outputFileResults.savedUri}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    // content://media/external/images/media/60
 
                 }
 
