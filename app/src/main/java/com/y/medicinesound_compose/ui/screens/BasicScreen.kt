@@ -1,5 +1,6 @@
 package com.y.medicinesound_compose.ui.screens
 
+import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,9 +18,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,13 +30,47 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.y.medicinesound_compose.R
+import com.y.medicinesound_compose.utils.NavDestination
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun BasicScreen() {
+fun BasicScreen(
+    navController : NavController,
+    basicViewModel : BasicScreenViewModel = hiltViewModel()
+) {
+
+    // 앱 키자마자 모든 권한을 요청
+    val permissions = if (Build.VERSION.SDK_INT <= 28) {
+        listOf(
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.INTERNET
+        )
+    } else {
+        listOf(
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.INTERNET
+        )
+    }
+
+    val permissionState = rememberMultiplePermissionsState(permissions = permissions)
+
+    if (!permissionState.allPermissionsGranted) {
+        SideEffect {
+            permissionState.launchMultiplePermissionRequest()
+        }
+    }
+
+
+    // UI
     Column(
         modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -56,7 +92,7 @@ fun BasicScreen() {
             BasicButton(
                 btnTextResId = R.string.btn_camera,
                 btnIconResId = R.drawable.camera_black,
-                onClicked = { /*TODO*/ }
+                onClicked = { navController.navigate(NavDestination.CAMERA_SCREEN) }
             )
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
             BasicButton(
@@ -152,5 +188,5 @@ fun TitleAndContentText(
 @Preview(showBackground = true)
 @Composable
 fun BasicPreview() {
-    BasicScreen()
+    BasicScreen(navController = NavController(LocalContext.current))
 }

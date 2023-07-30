@@ -25,42 +25,46 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.y.medicinesound_compose.R
 import com.y.medicinesound_compose.ui.screens.BasicScreen
+import com.y.medicinesound_compose.ui.screens.CameraScreen
 import com.y.medicinesound_compose.ui.theme.MedicineSound_composeTheme
+import com.y.medicinesound_compose.utils.NavDestination
 
-enum class MedicineSoundBasicScreens{
-    BasicScreen,
-}
 
 @ExperimentalMaterial3Api
 @Composable
 fun MedicineSoundApp(
-    navController : NavHostController = rememberNavController(),
+    navController: NavHostController = rememberNavController(),
 ) {
     // get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // get current route
-    val currentScreen = MedicineSoundBasicScreens.valueOf(
-        backStackEntry?.destination?.route ?: MedicineSoundBasicScreens.BasicScreen.name
-    )
+    val currentScreen  : String = backStackEntry?.destination?.route ?: NavDestination.BASIC_SCREEN
+
 
 
     Scaffold(
         topBar = {
-            MedicineSoundTopAppBar(
-                titleResId = R.string.app_name,
-                canNavigationBack = false, //TODO : 임시로
-                onNavigationClicked = { /*TODO*/ },
-                onMoreClicked = { /*TODO*/ }
-            )
+            if(currentScreen != NavDestination.CAMERA_SCREEN) {
+                MedicineSoundTopAppBar(
+                    titleResId = R.string.app_name,
+                    canNavigationBack = false, //TODO : 임시로
+                    onNavigationClicked = { /*TODO*/ },
+                    onMoreClicked = { /*TODO*/ }
+                )
+            }
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = MedicineSoundBasicScreens.BasicScreen.name,
+            startDestination = NavDestination.BASIC_SCREEN,
             modifier = Modifier.padding(innerPadding),
         ) {
-            composable(route = MedicineSoundBasicScreens.BasicScreen.name) {
-                BasicScreen()
+            composable(route = NavDestination.BASIC_SCREEN) {
+                BasicScreen(navController)
+            }
+
+            composable(route = NavDestination.CAMERA_SCREEN){
+                CameraScreen(navController)
             }
         }
     }
