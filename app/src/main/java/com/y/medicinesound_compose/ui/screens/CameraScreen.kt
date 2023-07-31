@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import com.y.medicinesound_compose.utils.NavDestination
 
 
 @Composable
@@ -65,7 +66,6 @@ fun CameraScreen(
 
         if (PackageManager.PERMISSION_GRANTED == context.checkSelfPermission(Manifest.permission.CAMERA)) {
             if (isPreview) {
-
                 Box(
                     modifier = Modifier
                         .height(screenHeight * 0.85f)
@@ -105,11 +105,19 @@ fun CameraScreen(
                     screenHeight,
                     screenWidth,
                     onRetakeClicked = {
-                        isPreview = !isPreview
-                        //TODO :다시 Preview로 돌아가게 하고 기존에 찍은 URL 정보는 완전히 삭제  + isBoolean이 상태값이 되어야 하나봄..*/
+                        // TODO : 1. URI 정보를 이용해 저장된 사진 삭제
+                        cameraViewModel.uriNull() // 2. URI 정보를 null 처리
+                        isPreview = !isPreview // 3. preview로 돌아가기
                     },
                     onConfirmClicked = {
-                        // TODO : BasicScreen으로 navigate하면서 Url 정보를 전달해 주어야함 */
+                        // BasicScreen으로 navigate하면서 Url 정보를 전달
+                        // imageUri 는 Uri? 타입이고, /과 //을 포함하고 있는 문제가 있음
+                        navController.navigate(
+                            NavDestination.BASIC_SCREEN_WITH_URI.replace(
+                                "{imageUri}",
+                                Uri.encode(imageUri.toString())
+                            )
+                        )
                     }
                 )
             }
@@ -120,6 +128,7 @@ fun CameraScreen(
 
 }
 
+// TODO : 전체적으로 화면이 아래로 내려가져 있는 문제 해결이 필요
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun TakenPictureContent(
@@ -131,7 +140,7 @@ fun TakenPictureContent(
 ) {
     Box(
         modifier = Modifier
-            .height(screenHeight * 0.85f)
+            .height(screenHeight * 0.8f)
             .width(screenWidth)
     ) {
         imageUri?.let {

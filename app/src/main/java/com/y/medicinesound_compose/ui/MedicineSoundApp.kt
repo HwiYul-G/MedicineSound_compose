@@ -19,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.y.medicinesound_compose.R
 import com.y.medicinesound_compose.ui.screens.BasicScreen
 import com.y.medicinesound_compose.ui.screens.CameraScreen
@@ -46,7 +48,7 @@ fun MedicineSoundApp(
         topBar = {
             MedicineSoundTopAppBar(
                 titleResId = R.string.app_name,
-                canNavigationBack = currentScreen != NavDestination.BASIC_SCREEN , //TODO : 임시로
+                canNavigationBack = currentScreen != NavDestination.BASIC_SCREEN && currentScreen != NavDestination.BASIC_SCREEN_WITH_URI, //TODO : 임시로
                 onNavigationClicked = { navController.navigateUp() },
                 onMoreClicked = { /*TODO*/ }
             )
@@ -60,6 +62,13 @@ fun MedicineSoundApp(
         ) {
             composable(route = NavDestination.BASIC_SCREEN) {
                 BasicScreen(navController)
+            }
+
+            composable(
+                route = NavDestination.BASIC_SCREEN_WITH_URI,
+                arguments = listOf(navArgument("imageUri") { type = NavType.StringType })
+            ) { backStackEntry ->
+                BasicScreen(navController, backStackEntry.arguments?.getString("imageUri"))
             }
 
             composable(route = NavDestination.CAMERA_SCREEN) {
