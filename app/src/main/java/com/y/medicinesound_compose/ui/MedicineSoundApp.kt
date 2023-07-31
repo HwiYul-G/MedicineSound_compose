@@ -38,20 +38,19 @@ fun MedicineSoundApp(
     // get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // get current route
-    val currentScreen  : String = backStackEntry?.destination?.route ?: NavDestination.BASIC_SCREEN
+    val currentScreen: String = backStackEntry?.destination?.route ?: NavDestination.BASIC_SCREEN
 
 
 
     Scaffold(
         topBar = {
-            if(currentScreen != NavDestination.CAMERA_SCREEN) {
-                MedicineSoundTopAppBar(
-                    titleResId = R.string.app_name,
-                    canNavigationBack = false, //TODO : 임시로
-                    onNavigationClicked = { /*TODO*/ },
-                    onMoreClicked = { /*TODO*/ }
-                )
-            }
+            MedicineSoundTopAppBar(
+                titleResId = R.string.app_name,
+                canNavigationBack = currentScreen != NavDestination.BASIC_SCREEN , //TODO : 임시로
+                onNavigationClicked = { navController.navigateUp() },
+                onMoreClicked = { /*TODO*/ }
+            )
+
         }
     ) { innerPadding ->
         NavHost(
@@ -63,7 +62,7 @@ fun MedicineSoundApp(
                 BasicScreen(navController)
             }
 
-            composable(route = NavDestination.CAMERA_SCREEN){
+            composable(route = NavDestination.CAMERA_SCREEN) {
                 CameraScreen(navController)
             }
         }
