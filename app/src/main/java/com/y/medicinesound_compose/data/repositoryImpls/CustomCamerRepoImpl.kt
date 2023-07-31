@@ -68,11 +68,6 @@ class CustomCameraRepoImpl @Inject constructor(
                         savedImageUri.value = it
                     }
 
-                    Toast.makeText(
-                        context,
-                        "${outputFileResults.savedUri}",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     // content://media/external/images/media/60
 
                 }

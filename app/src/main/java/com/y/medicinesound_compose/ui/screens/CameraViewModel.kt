@@ -51,5 +51,9 @@ class CameraViewModel @Inject constructor(
         }
     }
 
+    fun uriNull(){
+        _imageUri.value = null
+    }
+
 
 }
