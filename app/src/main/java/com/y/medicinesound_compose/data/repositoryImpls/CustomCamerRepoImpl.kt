@@ -2,6 +2,7 @@ package com.y.medicinesound_compose.data.repositoryImpls
 
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 
@@ -17,6 +18,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.y.medicinesound_compose.domain.repositories.CustomCameraRepo
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
@@ -29,6 +31,8 @@ class CustomCameraRepoImpl @Inject constructor(
     private val resolutionSelector: ResolutionSelector,
     private val imageAnalysis: ImageAnalysis,
 ) : CustomCameraRepo {
+
+    private val savedImageUri : MutableStateFlow<Uri?> = MutableStateFlow(null)
 
     override suspend fun captureAndSaveImage(context: Context) {
         // for file name
@@ -59,13 +63,11 @@ class CustomCameraRepoImpl @Inject constructor(
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    // TODO : uri를 basicviewModel에 가져와야해
-                    outputFileResults.savedUri // uri for saved image
-                    // 리턴 어케 시킴?
+                    // TODO : uri를 Usecase로 보내서 VM으로도 보내야해.
+                    outputFileResults.savedUri?.let {
+                        savedImageUri.value = it
+                    }
 
-                    // get the uri for capture image
-                    // we can use this uri to display captured
-                    // you can use coil library to load this uri
                     Toast.makeText(
                         context,
                         "${outputFileResults.savedUri}",
@@ -105,4 +107,6 @@ class CustomCameraRepoImpl @Inject constructor(
             e.printStackTrace()
         }
     }
+
+    override fun getSavedImageUri() = savedImageUri
 }
