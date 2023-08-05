@@ -1,6 +1,11 @@
 package com.y.medicinesound_compose.ui.screens
 
-import android.os.Build
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.util.Log
+
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -44,6 +49,9 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.y.medicinesound_compose.R
 import com.y.medicinesound_compose.utils.NavDestination
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.layout.onGloballyPositioned
 
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalCoilApi::class)
@@ -53,23 +61,16 @@ fun BasicScreen(
     imageUri: String? = null,
     basicViewModel: BasicScreenViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     // TODO : imageUri를 basicViewModel 내부에 사용자에게 보여주기 위한 상태로 담아야해!
     val basicUiState by basicViewModel.uiState.collectAsState()
 
     // 앱 키자마자 모든 권한을 요청
-    val permissions = if (Build.VERSION.SDK_INT <= 28) {
-        listOf(
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            android.Manifest.permission.INTERNET
-        )
-    } else {
-        listOf(
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.INTERNET
-        )
-    }
+    val permissions = listOf(
+        android.Manifest.permission.CAMERA,
+        android.Manifest.permission.INTERNET
+    )
+
 
     val permissionState = rememberMultiplePermissionsState(permissions = permissions)
 
@@ -79,13 +80,16 @@ fun BasicScreen(
         }
     }
 
+    if (imageUri != null) {
+        basicViewModel.updateUiStateImageUri(imageUri)
+    }
 
-//    if (imageUri == null) {
     // UI
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        val imageWidth = remember { mutableStateOf(0.0f) }
 
         Image(
             painter = if (imageUri == null) painterResource(R.drawable.medicine_temp_img)
@@ -93,7 +97,10 @@ fun BasicScreen(
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(320.dp),
+                .height(320.dp)
+                .onGloballyPositioned { coordinates ->
+                    imageWidth.value = coordinates.size.width.toFloat()
+                },
             contentScale = ContentScale.Crop,
         )
 
@@ -112,9 +119,17 @@ fun BasicScreen(
                 btnTextResId = R.string.btn_cognize,
                 btnIconResId = R.drawable.check_black,
                 onClicked = {
-                    if (basicUiState.medicineImg.isNotEmpty()) {
-                        // medicineImg에 있는 url을 이용해서 이미지를 분석 이때 tflite에 대한 처리 필요.
+                    if (imageUri != null) {
+                        Log.d("BasicScreen", "medicineImg is not empty $imageUri")
+                        val bitmap = getBitmapFromUri(context, imageUri)
+                        val medicineName = basicViewModel.getObjDetectionResult(
+                            bitmap,
+                            imageWidth.value,
+                            320.0f
+                        )
+                        Log.d("BasicScreen", "medicineName : ${basicUiState.medicineName}")
                     } else {
+                        Log.d("BasicScreen", "medicineImg is empty ${basicUiState.medicineImg}")
                         // TODO : 사진 촬영을 먼저하라는 안내가 필요함.
                     }
                 }
@@ -135,7 +150,10 @@ fun BasicScreen(
         Column(
             modifier = Modifier
         ) {
-            TitleAndContentText(title = "제품명", content = "제품 이름")
+            TitleAndContentText(
+                title = "제품명",
+                content = if (basicUiState.medicineName != "") basicUiState.medicineName else "인식된 약의 이름"
+            )
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
             if (basicUiState.medicineEffect.isNotEmpty()) {
                 TitleAndContentText(
@@ -145,71 +163,9 @@ fun BasicScreen(
             } else {
                 TitleAndContentText(
                     title = "효능 및 효과",
-                    content = "이미지가 없는 경우"
+                    content = "인식된 효능 효과"
                 )
             }
-        }
-    }
-//    } else {
-//        basicViewModel.updateUiStateImageUri(imageUri)
-//        BasicScreenContentWithImage(imageUri = imageUri, navController = navController)
-//    }
-}
-
-@OptIn(ExperimentalCoilApi::class)
-@Composable
-fun BasicScreenContentWithImage(
-    imageUri: String?,
-    navController: NavController,
-    basicViewModel: BasicScreenViewModel = hiltViewModel()
-) {
-    // UI
-    Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-
-        Image(
-            painter = rememberImagePainter(data = imageUri),
-            contentDescription = "촬영된 사진",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-        Column(
-            modifier = Modifier.padding(16.dp, 8.dp)
-        ) {
-            BasicButton(
-                btnTextResId = R.string.btn_camera,
-                btnIconResId = R.drawable.camera_black,
-                onClicked = { navController.navigate(NavDestination.CAMERA_SCREEN) }
-            )
-            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            BasicButton(
-                btnTextResId = R.string.btn_cognize,
-                btnIconResId = R.drawable.check_black,
-                onClicked = { /*TODO*/ }
-            )
-            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            BasicButton(
-                btnTextResId = R.string.btn_extract_info,
-                btnIconResId = R.drawable.extract_black,
-                onClicked = { basicViewModel.getEYakEffect("타이레놀") }
-            )
-        }
-
-        Column(
-            modifier = Modifier
-        ) {
-            TitleAndContentText(title = "제품명", content = "제품 이름")
-            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            TitleAndContentText(
-                title = "효능 및 효과",
-                content = "이미지 정보를 가진 스크린인 경우!"
-            )
         }
     }
 }
@@ -278,6 +234,15 @@ fun TitleAndContentText(
                 .padding(vertical = 8.dp, horizontal = 16.dp),
         )
     }
+}
+
+fun getBitmapFromUri(context: Context, imageUri: String): Bitmap {
+    Log.d("getBitmapFromUri", "imageUri: $imageUri")
+    val uri = Uri.parse(imageUri)
+    Log.d("getBitmapFromUri", "uri: $uri")
+    val src = ImageDecoder.createSource(context.contentResolver, uri)
+    Log.d("getBitmapFromUri", "src: $src")
+    return ImageDecoder.decodeBitmap(src)
 }
 
 
