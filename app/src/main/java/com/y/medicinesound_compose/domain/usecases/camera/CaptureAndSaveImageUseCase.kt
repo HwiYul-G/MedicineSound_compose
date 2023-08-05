@@ -1,4 +1,4 @@
-package com.y.medicinesound_compose.domain.usecases
+package com.y.medicinesound_compose.domain.usecases.camera
 
 import android.content.Context
 import com.y.medicinesound_compose.domain.repositories.CustomCameraRepo

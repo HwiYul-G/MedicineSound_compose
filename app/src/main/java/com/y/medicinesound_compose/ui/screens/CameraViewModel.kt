@@ -6,9 +6,9 @@ import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.y.medicinesound_compose.domain.usecases.CaptureAndSaveImageUseCase
-import com.y.medicinesound_compose.domain.usecases.GetCameraPreviewUseCase
-import com.y.medicinesound_compose.domain.usecases.GetUrlCameraUseCase
+import com.y.medicinesound_compose.domain.usecases.camera.CaptureAndSaveImageUseCase
+import com.y.medicinesound_compose.domain.usecases.camera.GetCameraPreviewUseCase
+import com.y.medicinesound_compose.domain.usecases.camera.GetUrlCameraUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

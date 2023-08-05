@@ -1,4 +1,4 @@
-package com.y.medicinesound_compose.domain.usecases
+package com.y.medicinesound_compose.domain.usecases.camera
 
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
