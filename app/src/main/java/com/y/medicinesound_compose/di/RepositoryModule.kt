@@ -2,8 +2,10 @@ package com.y.medicinesound_compose.di
 
 
 import com.y.medicinesound_compose.data.repositoryImpls.EYakRepoImpl
+import com.y.medicinesound_compose.data.repositoryImpls.TextToSpeechRepoImpl
 import com.y.medicinesound_compose.data.repositoryImpls.YOLORepoImpl
 import com.y.medicinesound_compose.domain.repositories.EYakRepo
+import com.y.medicinesound_compose.domain.repositories.TextToSpeechRepo
 import com.y.medicinesound_compose.domain.repositories.YOLORepo
 import dagger.Binds
 import dagger.Module
@@ -21,5 +23,7 @@ abstract class RepositoryModule {
     @Binds
     abstract fun bindYOLORepo(yoloRepoImpl: YOLORepoImpl): YOLORepo
 
+    @Binds
+    abstract fun bindTextToSpeechRepo(textToSpeechRepoImpl : TextToSpeechRepoImpl) : TextToSpeechRepo
 
 }
