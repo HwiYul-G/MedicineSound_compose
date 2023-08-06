@@ -65,6 +65,7 @@ fun BasicScreen(
     // TODO : imageUri를 basicViewModel 내부에 사용자에게 보여주기 위한 상태로 담아야해!
     val basicUiState by basicViewModel.uiState.collectAsState()
 
+
     // 앱 키자마자 모든 권한을 요청
     val permissions = listOf(
         android.Manifest.permission.CAMERA,
@@ -127,10 +128,11 @@ fun BasicScreen(
                             imageWidth.value,
                             320.0f
                         )
+                        //basicViewModel.speakText("이 약은 " + medicineName.toString() + "입니다.")
                         Log.d("BasicScreen", "medicineName : ${basicUiState.medicineName}")
                     } else {
                         Log.d("BasicScreen", "medicineImg is empty ${basicUiState.medicineImg}")
-                        // TODO : 사진 촬영을 먼저하라는 안내가 필요함.
+                        basicViewModel.speakText("사진 촬영을 먼저 해 주세요. 사진 촬영 버튼은 위에서 첫 번째에 있습니다.")
                     }
                 }
             )
@@ -141,8 +143,11 @@ fun BasicScreen(
                 onClicked = {
                     if (basicUiState.medicineName.isNotEmpty()) {
                         basicViewModel.getEYakEffect(basicUiState.medicineName)
+                        //basicViewModel.speakText(basicUiState.medicineName + "의 효능 및 효과는 ${basicUiState.medicineEffect} 입니다.")
+                    } else {
+                        basicViewModel.speakText("위에서 첫 번째 버튼인 사진촬영 버튼과 두 번째 버튼인 인식하기 버튼을 먼저 이용한 후에 이용해 주세요.")
                     }
-                    // TODO : else일 때 사진을 찍고 인식하기 버튼을 사용하라는 안내가 필요
+
                 }
             )
         }

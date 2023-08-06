@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.y.medicinesound_compose.domain.usecases.EYak.GetEYakListUseCase
 import com.y.medicinesound_compose.domain.usecases.GetObjDetectionResult
+import com.y.medicinesound_compose.domain.usecases.TextToSpeechUseCase
 import com.y.medicinesound_compose.model.BasicUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class BasicScreenViewModel @Inject constructor(
     private val getEYakListUseCase: GetEYakListUseCase,
     private val getObjDetectionResult: GetObjDetectionResult,
+    private val textToSpeechUseCase: TextToSpeechUseCase,
 ) : ViewModel() {
     private val TAG = "BasicScreenViewModel"
 
@@ -57,6 +59,7 @@ class BasicScreenViewModel @Inject constructor(
                         val list = result.getOrNull()
                         list?.let {
                             updateUiStateMedicineEffect(it[0].efcyQesitm)
+                            speakText("$itemName 의 효능 및 효과는 다음과 같습니다. " + it[0].efcyQesitm)
                         }
                     }
                 } else {
@@ -92,6 +95,7 @@ class BasicScreenViewModel @Inject constructor(
                 Log.d(TAG, "getObjDetectionResult: $medicineName")
                 withContext(Dispatchers.Main) {
                     updateUiStateMedicineName(medicineName)
+                    speakText("이 약은 $medicineName 으로 인식됩니다. ")
                 }
             } catch (e: java.lang.Exception) {
                 Log.e(TAG, "getObjDetectionResult: ${e.message}")
@@ -110,6 +114,12 @@ class BasicScreenViewModel @Inject constructor(
             5 -> "신신파스아렉스"
             6 -> "베아제정"
             else -> "편의점 상비약 7종만 인삭합니다."
+        }
+    }
+
+    fun speakText(text : String){
+        viewModelScope.launch {
+            textToSpeechUseCase.invoke(text)
         }
     }
 
