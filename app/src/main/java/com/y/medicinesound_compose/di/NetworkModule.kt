@@ -3,7 +3,7 @@ package com.y.medicinesound_compose.di
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.y.medicinesound_compose.data.EYakService
+import com.y.medicinesound_compose.data.remote.datasource.EYakService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

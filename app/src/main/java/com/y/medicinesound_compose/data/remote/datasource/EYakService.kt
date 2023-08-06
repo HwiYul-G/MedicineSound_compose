@@ -1,4 +1,4 @@
-package com.y.medicinesound_compose.data
+package com.y.medicinesound_compose.data.remote.datasource
 
 import com.y.medicinesound_compose.data.remote.dto.EYakResponse
 import retrofit2.Response

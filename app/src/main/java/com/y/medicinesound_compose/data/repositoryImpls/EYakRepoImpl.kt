@@ -1,6 +1,6 @@
 package com.y.medicinesound_compose.data.repositoryImpls
 
-import com.y.medicinesound_compose.data.EYakService
+import com.y.medicinesound_compose.data.remote.datasource.EYakService
 import com.y.medicinesound_compose.data.remote.dto.EYakItem
 import com.y.medicinesound_compose.domain.repositories.EYakRepo
 import java.lang.RuntimeException
